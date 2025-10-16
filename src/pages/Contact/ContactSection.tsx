@@ -31,6 +31,9 @@ export default function ContactSection() {
 
   const [messages, setMessages] = useState<FormData[]>([]);
 
+  const TELEGRAM_BOT_TOKEN = "8181527285:AAHbwjuU715Wlp9KgM5Oe3phM3pwRl42FPY";
+  const TELEGRAM_CHAT_ID = "8092169481";
+
   function validate() {
     const e: Errors = {};
     if (!form.name.trim()) e.name = "Ism kiriting";
@@ -51,15 +54,47 @@ export default function ContactSection() {
 
     setStatus({ loading: true, success: null, message: "" });
 
-    setTimeout(() => {
-      setMessages((prev) => [form, ...prev]); 
-      setForm({ name: "", email: "", subject: "", message: "" });
+    try {
+      const text = `
+📩 *Yangi Xabar!*
+👤 Ism: ${form.name}
+📧 Email: ${form.email}
+📌 Mavzu: ${form.subject}
+💬 Xabar:
+${form.message}
+`;
+
+      const res = await fetch(
+        `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            chat_id: TELEGRAM_CHAT_ID,
+            text,
+            parse_mode: "Markdown",
+          }),
+        }
+      );
+
+      if (res.ok) {
+        setMessages((prev) => [form, ...prev]);
+        setForm({ name: "", email: "", subject: "", message: "" });
+        setStatus({
+          loading: false,
+          success: true,
+          message: "✅ Xabaringiz yuborildi!",
+        });
+      } else {
+        throw new Error("Yuborishda xatolik");
+      }
+    } catch (err) {
       setStatus({
         loading: false,
-        success: true,
-        message: "✅ Xabaringiz muvaffaqiyatli yuborildi!",
+        success: false,
+        message: "❌ Xabar yuborilmadi. Keyinroq urinib ko‘ring.",
       });
-    }, 1500);
+    }
   }
 
   return (
@@ -70,8 +105,7 @@ export default function ContactSection() {
             Biz bilan bog'laning
           </h2>
           <p className="text-gray-400 text-lg max-w-md">
-            Sizda savol yoki taklif bormi? Quyidagi formani to'ldiring yoki biz
-            bilan to'g'ridan-to'g'ri bog'laning.
+            Sizda savol yoki taklif bormi? Quyidagi formani to'ldiring — xabaringiz to‘g‘ridan-to‘g‘ri Telegram botimizga yuboriladi.
           </p>
 
           <div className="space-y-5 pt-4">
@@ -89,17 +123,7 @@ export default function ContactSection() {
                 <p className="font-medium text-gray-100">hello@sasifye.com</p>
               </div>
             </div>
-            <div className="flex items-center gap-4 bg-gray-800/50 p-5 rounded-2xl border border-gray-700 hover:border-indigo-500 transition-all duration-300">
-              <span className="text-indigo-400 text-2xl">📍</span>
-              <div>
-                <p className="text-sm text-gray-400">Manzil</p>
-                <p className="font-medium text-gray-100">
-                  2912 Meadowbrook Road, Los Angeles, CA 90017
-                </p>
-              </div>
-            </div>
           </div>
-
 
           <div className="rounded-2xl overflow-hidden shadow-lg border border-gray-800 mt-8">
             <iframe
@@ -130,9 +154,7 @@ export default function ContactSection() {
                 )}
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-300">
-                  Email
-                </label>
+                <label className="text-sm font-medium text-gray-300">Email</label>
                 <input
                   type="email"
                   value={form.email}
@@ -188,35 +210,16 @@ export default function ContactSection() {
               {status.loading ? "Yuborilmoqda..." : "Yuborish"}
             </button>
 
-
-            {status.success && (
-              <p className="text-green-400 text-sm text-center mt-2 animate-pulse">
+            {status.message && (
+              <p
+                className={`text-sm text-center mt-2 ${
+                  status.success ? "text-green-400" : "text-red-400"
+                }`}
+              >
                 {status.message}
               </p>
             )}
           </form>
-
-          {messages.length > 0 && (
-            <div className="mt-10 space-y-4">
-              <h3 className="text-xl font-semibold text-white border-b border-gray-700 pb-2">
-                Yuborilgan xabarlar
-              </h3>
-              {messages.map((m, i) => (
-                <div
-                  key={i}
-                  className="bg-gray-800 p-5 rounded-xl border border-gray-700 hover:border-indigo-500 transition"
-                >
-                  <p className="text-indigo-400 font-semibold mb-1">
-                    {m.name} ({m.email})
-                  </p>
-                  <p className="text-sm text-gray-400 italic mb-2">
-                    Mavzu: {m.subject}
-                  </p>
-                  <p className="text-gray-300">{m.message}</p>
-                </div>
-              ))}
-            </div>
-          )}
         </div>
       </div>
     </section>
