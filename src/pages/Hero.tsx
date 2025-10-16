@@ -1,4 +1,4 @@
-import  { useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
 
@@ -10,6 +10,9 @@ export const Hero = () => {
   ]
 
   const [current, setCurrent] = useState(0)
+  const [emoji, setEmoji] = useState<string | null>(null)
+
+  const emojis = ["🚀", "🔥", "✨", "💡", "😎", "🎨", "🌈", "🦄", "🎯", "💥"]
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -17,6 +20,13 @@ export const Hero = () => {
     }, 3000)
     return () => clearInterval(interval)
   }, [images.length])
+
+  // 🔥 Tugma bosilganda emoji ko‘rsatish
+  const showRandomEmoji = () => {
+    const random = emojis[Math.floor(Math.random() * emojis.length)]
+    setEmoji(random)
+    setTimeout(() => setEmoji(null), 1500) // 1.5 soniyadan keyin yo‘qoladi
+  }
 
   return (
     <section className="relative w-full min-h-screen flex items-center justify-center overflow-hidden bg-black text-white">
@@ -101,16 +111,33 @@ export const Hero = () => {
           collaborate, and succeed. Experience the future of productivity.
         </p>
 
-        <div className="flex flex-wrap justify-center gap-4">
-          <Button className="bg-gradient-to-r from-pink-500 to-purple-500 text-white font-semibold px-8 py-3 rounded-full text-lg hover:opacity-90 transition">
+        <div className="flex flex-wrap justify-center gap-4 relative">
+          <Button
+            onClick={showRandomEmoji}
+            className="bg-gradient-to-r from-pink-500 to-purple-500 text-white font-semibold px-8 py-3 rounded-full text-lg hover:opacity-90 transition relative"
+          >
             Get Started Now
           </Button>
+
           <Button
             variant="outline"
-            className="border  text-black rounded-full px-8 py-3 text-lg transition"
+            className="border text-black rounded-full px-8 py-3 text-lg transition bg-white"
           >
             Learn More
           </Button>
+
+          {emoji && (
+            <motion.div
+              key={emoji}
+              className="absolute top-[-50px] text-4xl"
+              initial={{ opacity: 0, y: 20, scale: 0.5 }}
+              animate={{ opacity: 1, y: -60, scale: 1.5 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 1 }}
+            >
+              {emoji}
+            </motion.div>
+          )}
         </div>
       </div>
     </section>

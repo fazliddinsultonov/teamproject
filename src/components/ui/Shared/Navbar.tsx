@@ -2,7 +2,7 @@ import React from "react"
 import { ShoppingBag, Menu } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { navLinks } from "@/constants"
-
+import { SignedIn, SignedOut, SignUpButton, UserButton } from "@clerk/clerk-react"
 export const Navbar: React.FC = () => {
   const [open, setOpen] = React.useState(false)
 
@@ -68,9 +68,17 @@ export const Navbar: React.FC = () => {
             >
               Cart (0)
             </Button>
-            <Button className="bg-gradient-to-r from-pink-500 to-purple-500 text-white font-semibold">
-              Get Started
-            </Button>
+             <SignedOut>
+              <SignUpButton mode="modal">
+                <Button className="bg-gradient-to-r from-pink-500 to-purple-500 text-white font-semibold">
+                  Get Started
+                </Button>
+              </SignUpButton>
+            </SignedOut>
+
+            <SignedIn>
+              <UserButton afterSignOutUrl="/" />
+            </SignedIn>
           </div>
         </div>
       )}
