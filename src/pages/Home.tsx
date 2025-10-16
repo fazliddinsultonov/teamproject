@@ -3,6 +3,7 @@ import { Hero } from "./Hero"
 import TrustedSection from "./TrustedSection"
 import WebFollow from "./WebFollow"
 import Slider from "./Slider"
+import ProductShowcase from "./ProductShow"
 
 
 const Home = () => {
@@ -10,6 +11,7 @@ const Home = () => {
     <>
     <Hero />
     <WebFollow/>
+    <ProductShowcase />
     <TrustedSection />
     <Slider />
     <Footer />
